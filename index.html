@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Sertifikasi Manajemen Risiko Jenjang 4 - Try Out 1 s.d. 4</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full flex flex-col antialiased">
+
+    <!-- Header / Navbar -->
+    <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-700 p-2.5 rounded-xl shadow-inner">
+                    <i class="fa-solid fa-shield-halved text-xl text-indigo-200"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight">Sertifikasi Manajemen Risiko Jenjang 4 (BSMR)</h1>
+                    <p class="text-xs text-indigo-200" id="package-subtitle">Try Out 1 s.d. 4 (Total 120 Soal)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <!-- Package Selector Dropdown -->
+                <div class="bg-indigo-800 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border border-indigo-700/60 shadow-sm">
+                    <i class="fa-solid fa-layer-group text-indigo-300"></i>
+                    <select id="package-selector" onchange="app.switchPackage(this.value)" class="bg-transparent text-white focus:outline-none cursor-pointer">
+                        <option value="to1" class="bg-indigo-900 text-white">Try Out 1</option>
+                        <option value="to2" class="bg-indigo-900 text-white">Try Out 2</option>
+                        <option value="to3" class="bg-indigo-900 text-white">Try Out 3</option>
+                        <option value="to4" class="bg-indigo-900 text-white">Try Out 4</option>
+                    </select>
+                </div>
+                <!-- Timer Widget -->
+                <div class="bg-indigo-800/80 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border border-indigo-700/60 shadow-sm">
+                    <i class="fa-regular fa-clock text-amber-400"></i>
+                    <span id="timer-display" class="font-mono tracking-wider">45:00</span>
+                </div>
+                <!-- Quick Stats -->
+                <div class="hidden sm:flex items-center space-x-3 bg-indigo-800/60 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm border border-indigo-700/50">
+                    <div><span class="text-indigo-300">Skor:</span> <span id="stat-score" class="font-semibold text-amber-400">0</span></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
+
+        <!-- Left Sidebar: Sections & Question Palette -->
+        <aside class="w-full lg:w-80 flex-shrink-0 space-y-4">
+            <!-- Section Selector Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Daftar Section (6 Bagian)</h2>
+                <div class="space-y-1.5" id="section-buttons">
+                    <!-- Dynamic Section Buttons -->
+                </div>
+            </div>
+
+            <!-- Question Palette Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 hidden sm:block">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Navigasi Soal Section Ini</h2>
+                    <span id="section-progress-text" class="text-xs font-medium text-slate-500">0/5</span>
+                </div>
+                <div id="question-palette" class="grid grid-cols-5 gap-2 p-1">
+                    <!-- Palette items -->
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex flex-wrap gap-3 text-xs text-slate-500">
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> Benar</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> Salah</div>
+                    <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-200 inline-block"></span> Belum</div>
+                </div>
+            </div>
+
+            <!-- Action Controls Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-3">
+                <button onclick="app.resetCurrentSection()" class="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Reset Section Ini
+                </button>
+                <button onclick="app.finishQuiz()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition text-sm shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-flag-checkered"></i> Selesai & Lihat Hasil Ujian
+                </button>
+            </div>
+        </aside>
+
+        <!-- Right Content: Question Card / Summary View -->
+        <section class="flex-grow flex flex-col">
+            <!-- Quiz View -->
+            <div id="quiz-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-grow p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                    <!-- Question Header Info -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-4 border-b border-slate-100 mb-6">
+                        <div class="flex items-center gap-2">
+                            <span id="section-badge" class="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full uppercase tracking-wide">Section A</span>
+                            <span class="text-xs text-slate-400 font-medium" id="question-counter">Soal 1 dari 5</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="app.toggleBookmark()" id="bookmark-btn" class="text-slate-400 hover:text-amber-500 transition text-sm flex items-center gap-1">
+                                <i class="fa-regular fa-star" id="bookmark-icon"></i> <span class="text-xs">Tandai</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="mb-6">
+                        <h3 id="question-text" class="text-lg sm:text-xl font-semibold text-slate-900 leading-relaxed whitespace-pre-line">
+                            Memuat pertanyaan...
+                        </h3>
+                    </div>
+
+                    <!-- Options Container -->
+                    <div id="options-container" class="space-y-3 mb-6">
+                        <!-- Options injected dynamically -->
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div id="explanation-box" class="hidden rounded-xl p-5 mb-6 border animate-fadeIn">
+                        <div class="flex items-center gap-2 font-semibold mb-1" id="explanation-header">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span id="explanation-title">Kunci Jawaban & Pembahasan</span>
+                        </div>
+                        <p id="explanation-text" class="text-sm leading-relaxed text-slate-700 whitespace-pre-line"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls Footer inside Card -->
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
+                    <button onclick="app.prevQuestion()" id="prev-btn" class="px-4 py-2.5 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition font-medium text-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    
+                    <button onclick="app.checkAnswer()" id="check-btn" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition text-sm shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-check"></i> Cek Jawaban
+                    </button>
+
+                    <button onclick="app.nextQuestion()" id="next-btn" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl transition font-medium text-sm flex items-center gap-2">
+                        Selanjutnya <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary View (Hidden by default) -->
+            <div id="summary-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-grow p-6 sm:p-8 hidden">
+                <div class="text-center max-w-xl mx-auto py-8">
+                    <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2" id="summary-title">Hasil Ujian Try Out</h2>
+                    <p class="text-slate-500 text-sm mb-6">Berikut adalah rekapitulasi penilaian dari seluruh 6 section ujian pada paket ini.</p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <span class="block text-xs text-slate-400 font-medium uppercase mb-1">Total Soal</span>
+                            <span id="summary-total" class="text-xl font-bold text-slate-800">30</span>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                            <span class="block text-xs text-emerald-600 font-medium uppercase mb-1">Jawaban Benar</span>
+                            <span id="summary-correct" class="text-xl font-bold text-emerald-600">0</span>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <span class="block text-xs text-amber-600 font-medium uppercase mb-1">Skor Akhir</span>
+                            <span id="summary-score-pct" class="text-xl font-bold text-amber-600">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown per Section -->
+                    <div class="text-left mb-8">
+                        <h3 class="text-sm font-bold text-slate-700 mb-3">Detail Per Section:</h3>
+                        <div id="section-breakdown-list" class="space-y-2">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <button onclick="app.switchView('quiz')" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition text-sm shadow-sm">
+                            <i class="fa-solid fa-arrow-rotate-left mr-2"></i> Kembali ke Soal
+                        </button>
+                        <button onclick="app.resetAll()" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition text-sm">
+                            <i class="fa-solid fa-rotate mr-2"></i> Ulangi Paket Ini
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer copyright -->
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
+        Aplikasi Ujian Sertifikasi Manajemen Risiko Jenjang 4 (Try Out 1 s.d. 4) &copy; 2026
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const allPackages = {
+            to1: {
+                title: "Try Out 1",
+                sections: {
+                    secA: {
+                        title: "A. Mengelola Risiko Kredit",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko perubahan iklim dapat mempengaruhi secara langsung kualitas kredit yang diberikan oleh Bank kepada debitur. Transmisi risiko perubahan iklim ini dapat berdampak pada risiko kredit, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'kerusakan aset fisik' },
+                                    { key: 'B', text: 'penurunan nilai aset' },
+                                    { key: 'C', text: 'perubahan suku bunga' },
+                                    { key: 'D', text: 'peningkatan biaya operasional debitur' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C. perubahan suku bunga.\nPembahasan: Perubahan suku bunga berkaitan dengan Risiko Pasar, bukan transmisi langsung risiko perubahan iklim terhadap debitur (risiko kredit)."
+                            },
+                            {
+                                id: 2,
+                                question: "Manakah pernyataan di bawah ini yang merupakan tujuan dalam melakukan pengukuran risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'untuk menetapkan profil risiko kredit' },
+                                    { key: 'B', text: 'untuk mengukur kecukupan modal Bank dalam mengantisipasi risiko kredit' },
+                                    { key: 'C', text: 'untuk menetapkan profil risiko kredit dan mengatasi kredit macet' },
+                                    { key: 'D', text: 'untuk menetapkan profil risiko kredit dan untuk mengukur kecukupan modal Bank dalam mengantisipasi risiko kredit' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D.\nPembahasan: Tujuan pengukuran risiko kredit mencakup penetapan profil risiko kredit serta mengukur kecukupan modal bank dalam mengantisipasi risiko kredit."
+                            },
+                            {
+                                id: 3,
+                                question: "Metode pengukuran risiko kredit dengan menggunakan Standardized Approach Basel III Reforms berbeda dengan Standardized Approach Basel II, manakah yang merupakan salah satu perbedaan antara Basel III Reforms dengan Basel II?",
+                                options: [
+                                    { key: 'A', text: 'Basel II mempunyai 15 kategori portfolio dan bobot risiko sedangkan Basel III Reforms mempunyai 12 kategori portfolio dan bobot risiko' },
+                                    { key: 'B', text: 'Basel II mempunyai 15 kategori portofolio sedangkan Basel III Reforms mempunyai 12 kategori portofolio' },
+                                    { key: 'C', text: 'Basel II mempunyai 12 kategori portofolio dan bobot risiko sedangkan Basel III Reforms mempunyai 15 kategori portofolio dan bobot risiko' },
+                                    { key: 'D', text: 'Basel II mempunyai 12 kategori portfolio sedangkan Basel Ill Reforms mempunyai 15 kategori portfolio' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C.\nPembahasan: Basel II memiliki 12 kategori portofolio dan bobot risiko, sedangkan Basel III Reforms menyempurnakannya menjadi 15 kategori portofolio dan bobot risiko dengan sensitivitas yang lebih tinggi."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah pernyataan di Bawah ini yang merupakan tujuan dari prosedur pemantauan risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'menangani dengan cepat kredit bermasalah' },
+                                    { key: 'B', text: 'prosedur pemantauan harus mampu mengidentifikasikan aset yang bermasalah atau transaksi lainnya untuk menjamin bahwa aset yang bermasalah tersebut mendapat perhatian yang lebih, termasuk tindakan penyelamatan serta pembentukan cadangan yang cukup' },
+                                    { key: 'C', text: 'memahami kondisi keuangan terkini dari debitur atau pihak lawan' },
+                                    { key: 'D', text: 'menilai kecukupan agunan secara berkala dibandingkan dengan kewajiban debitur atau pihak lawan transaksi (counterparty)' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B.\nPembahasan: Prosedur pemantauan risiko kredit wajib mampu mengidentifikasikan aset bermasalah agar mendapat perhatian lebih, tindakan penyelamatan, serta pembentukan cadangan yang memadai."
+                            },
+                            {
+                                id: 5,
+                                question: "Penilaian kualitas penerapan Manajemen Risiko kredit merupakan penilaian terhadap 4 (empat) aspek yang saling terkait. Manakah di bawah ini yang BUKAN merupakan aspek dalam penilaian kualitas penerapan manajemen risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'Tata kelola perusahaan' },
+                                    { key: 'B', text: 'Kerangka Manajemen risiko kredit' },
+                                    { key: 'C', text: 'Proses Manajemen risiko kredit, kecukupan sumber daya manusia, dan kecukupan sistem informasi manajemen' },
+                                    { key: 'D', text: 'Kecukupan sistem pengendalian risiko kredit dengan memperhatikan karakteristik dan kompleksitas usaha bank' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A. Tata kelola perusahaan (atau tata kelola secara umum merupakan pilar pendukung tersendiri)."
+                            }
+                        ]
+                    },
+                    secB: {
+                        title: "B. Mengelola Risiko Likuiditas",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko iklim dapat memengaruhi risiko likuiditas Bank secara langsung maupun tidak langsung, adapun salah satu potensi dampak dari risiko iklim terhadap risiko likuiditas Bank adalah:",
+                                options: [
+                                    { key: 'A', text: 'kenaikan Liquidity Coverage Ratio (LCR)' },
+                                    { key: 'B', text: 'penurunan Liquidity Coverage Ratio (LCR)' },
+                                    { key: 'C', text: 'kenaikan High Quality Liquid Assets (HQLA)' },
+                                    { key: 'D', text: 'penurunan High Quality Liquid Assets (HQLA)' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B. penurunan Liquidity Coverage Ratio (LCR)."
+                            },
+                            {
+                                id: 2,
+                                question: "Tujuan dari pengukuran risiko likuiditas adalah:",
+                                options: [
+                                    { key: 'A', text: 'untuk menetapkan profil risiko likuiditas jangka pendek, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'B', text: 'untuk menetapkan profil risiko likuiditas jangka pendek dan jangka panjang, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'C', text: 'untuk menetapkan profil risiko likuiditas, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'D', text: 'untuk menetapkan risiko inheren risiko likuiditas, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Skenario perhitungan LCR merupakan kombinasi dari idiosyncratic maupun marketwide shock, yang akan menyebabkan Bank Syariah mengalami hal seperti ini:",
+                                options: [
+                                    { key: 'A', text: 'Penarikan komitmen kredit yang tidak terjadwal dan fasilitas likuiditas yang disediakan bank kepada pihak ketiga' },
+                                    { key: 'B', text: 'Adanya kebutuhan bank untuk melunasi kewajibannya dalam rangka memitigasi risiko reputasi' },
+                                    { key: 'C', text: 'Peningkatan volatilitas pasar yang berdampak pada kualitas agunan atau potensi risiko ke depan untuk produk derivatif sehingga memerlukan haircut agunan yang lebih besar, tambahan agunan atau kebutuhan likuiditas lainnya' },
+                                    { key: 'D', text: 'peningkatan volatilitas pasar yang berdampak pada kualitas agunan atau potensi risiko ke depan untuk produk derivatif yang memenuhi prinsip syariah/sharia compliance hedging sesuai fatwa DSN-MUI sehingga memerlukan pengurangan nilai (haircut) agunan yang lebih besar, tambahan agunan atau kebutuhan likuiditas yang lainnya' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 4,
+                                question: "Pemantauan risiko likuiditas yang dilakukan Bank harus memperhatikan indikator peringatan dini untuk mengetahui potensi peningkatan risiko likuiditas Bank. Adapun indikator peringatan dini ini terdiri dari:",
+                                options: [
+                                    { key: 'A', text: 'indikator internal dan faktor-faktor yang mempengaruhi' },
+                                    { key: 'B', text: 'indikator eksternal dan faktor-faktor yang mempengaruhi' },
+                                    { key: 'C', text: 'indikator internal dan indikator eksternal' },
+                                    { key: 'D', text: 'indikator internal dan indikator eksternal dan faktor-faktor yang mempengaruhi' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C. indikator internal dan indikator eksternal."
+                            },
+                            {
+                                id: 5,
+                                question: "Pernyataan di bawah ini merupakan pemahaman mengenai profil risiko likuiditas, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'Profil Risiko Likuiditas merupakan gambaran secara menyeluruh atas besarnya potensi Risiko Likuiditas yang melekat pada seluruh produk dan aktivitas Bank serta kewajiban Bank' },
+                                    { key: 'B', text: 'Profil Risiko Likuiditas merupakan gambaran secara menyeluruh atas besarnya potensi Risiko Likuiditas yang melekat pada seluruh produk dan aktivitas Bank' },
+                                    { key: 'C', text: 'Profil Risiko Likuiditas adalah hasil penilaian atau kesimpulan atas kemampuan Bank untuk menanggung suatu Risiko Likuiditas' },
+                                    { key: 'D', text: 'Profil Risiko Likuiditas merupakan hasil penilaian akhir atau kesimpulan antara risiko inheren Risiko Likuiditas yang dihadapi Bank (sebelum menerapkan pengendalian risiko) versus kualitas penerapan manajemen risiko yang dimiliki Bank' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secC: {
+                        title: "C. Mengelola Risiko Pasar",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko iklim dapat memengaruhi eksposur risiko pasar bank secara langsung, salah satu dampak dari perubahan iklim terhadap risiko pasar adalah:",
+                                options: [
+                                    { key: 'A', text: 'kerusakan aset fisik' },
+                                    { key: 'B', text: 'volatilitas harga instrumen keuangan' },
+                                    { key: 'C', text: 'penurunan nilai aset' },
+                                    { key: 'D', text: 'peningkatan biaya operasional debitur' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B. volatilitas harga instrumen keuangan."
+                            },
+                            {
+                                id: 2,
+                                question: "Salah satu Faktor penilaian risiko inheren pada risiko pasar adalah Volume dan Komposisi Portofolio. Manakah parameter atau indikator yang TIDAK digunakan dalam menilai Volume dan Komposisi Portofolio?",
+                                options: [
+                                    { key: 'A', text: 'Total Derivatif dan FVO / Total Aset' },
+                                    { key: 'B', text: 'Kewajiban Trading, Derivatif dan FVO / Total Aset' },
+                                    { key: 'C', text: 'Total Structured Product / Total Aset' },
+                                    { key: 'D', text: 'Total Derivatif / Total Aset' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 3,
+                                question: "Menurut SEOJK Nomor 23/SEOJK.03/2022 tentang Perhitungan Aset Tertimbang Menurut Risiko untuk Risiko Pasar bagi Bank Umum, Bank hanya dapat menggunakan pendekatan standar yang disederhanakan (simplified standardized approach) dengan memenuhi persyaratan tertentu. Manakah dibawah ini yang BUKAN persyaratan tersebut?",
+                                options: [
+                                    { key: 'A', text: 'Bank yang tidak berdampak sistemik sebagaimana dimaksud dalam Peraturan Otoritas Jasa Keuangan mengenai penetapan bank sistemik dan capital surcharge' },
+                                    { key: 'B', text: 'Bank yang berdampak sistemik sebagaimana dimaksud dalam Peraturan Otoritas Jasa Keuangan mengenai penetapan bank sistemik dan capital surcharge' },
+                                    { key: 'C', text: 'Bank tidak memiliki eksposur correlation trading positions' },
+                                    { key: 'D', text: 'disetujui oleh Otoritas Jasa Keuangan' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah pernyataan di bawah ini yang TIDAK TEPAT dalam melakukan analisis eksposur risiko pasar?",
+                                options: [
+                                    { key: 'A', text: 'Bagaimana menurunkan frekuensi terjadinya risiko pasar per event kejadian maupun akumulasi event per tahun' },
+                                    { key: 'B', text: 'Bagaimana memitigasi agar eksposur risiko pasar dapat dikendalikan sesuai dengan risk appetite dan mash dibawah risk tolerance' },
+                                    { key: 'C', text: 'Bagaimana menghindari ekposur risiko pasar akibat faktor eksternal' },
+                                    { key: 'D', text: 'Bagaimana menurunkan dampak dari terjadinya risiko pasar baik per event kejadian' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "Manakah di bawah ini yang merupakan pengertian profil risiko pasar?",
+                                options: [
+                                    { key: 'A', text: 'merupakan gambaran secara parsial atas besarnya potensi risiko pasar yang melekat pada seluruh produk aktivitas Bank' },
+                                    { key: 'B', text: 'merupakan gambaran secara menyeluruh atas besarnya risiko pasar yang terjadi pada seluruh produk aktivitas Bank' },
+                                    { key: 'C', text: 'merupakan gambaran secara menyeluruh atas besarnya potensi risiko pasar yang melekat pada seluruh produk aktivitas Bank' },
+                                    { key: 'D', text: 'merupakan gambaran secara menyeluruh atas besarnya potensi risiko pasar yang melekat pada bagian treasuri di Bank' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secD: {
+                        title: "D. Mengelola Risiko Imbal Hasil",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Rate sensitive liabilities (RSL) adalah kewajiban Bank dimana bunga yang harus dibayar tergantung pada suku bunga pasar. Manakah dibawah yang BUKAN merupakan RSL?",
+                                options: [
+                                    { key: 'A', text: 'giro dan tabungan' },
+                                    { key: 'B', text: 'kredit dan surat berharga' },
+                                    { key: 'C', text: 'deposito' },
+                                    { key: 'D', text: 'deposito dan surat berharga' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B. kredit dan surat berharga."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam pengukuran risiko imbal hasil pada perbankan Syariah hampir serupa dengan risiko suku bunga di banking book pada perbankan konvensional. Pengukuran risiko suku bunga pada Bank konvensional adalah dengan menggunakan metode:",
+                                options: [
+                                    { key: 'A', text: 'analisis repricing gap dan analisis sumber dana' },
+                                    { key: 'B', text: 'analisis sumber dana dan analisis duration gap' },
+                                    { key: 'C', text: 'analisis repricing gap dan analisis duration gap' },
+                                    { key: 'D', text: 'simplified standised approach dan standard approach' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Salah satu parameter utama atau indikator dalam penilaian risiko inheren imbal hasil yang terkait dengan Strategi dan Kinerja Bank dalam menghasilkan Pendapatan/Laba adalah:",
+                                options: [
+                                    { key: 'A', text: 'Margin pembiayaan' },
+                                    { key: 'B', text: 'Laba sebelum pajak' },
+                                    { key: 'C', text: 'Perbandingan Pembiayaan bermasalah terhadap Total pembiayaan' },
+                                    { key: 'D', text: 'Perbandingan Dana pihak ketiga terhadap aset produktif' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 4,
+                                question: "Sesuai POJK Nomor 65/POJK.03/2016 Tentang Penerapan Manajemen Risiko Bagi Bank Umum Syariah dan Unit Usaha Syariah, dalam pelaksanaan pemantauan Risiko Imbal Hasil, Bank wajib paling sedikit melakukan hal-hal sebagaimana di bawah ini:",
+                                options: [
+                                    { key: 'A', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan SOP' },
+                                    { key: 'B', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan proses pelaporan dalam hal terdapat perubahan kegiatan usaha, produk, transaksi, faktor risiko, teknologi informasi dan sistem informasi manajemen risiko yang bersifat material' },
+                                    { key: 'C', text: 'Penyempurnaan proses pelaporan dalam hal terdapat perubahan kegiatan usaha, produk, transaksi, faktor risiko yang bersifat material' },
+                                    { key: 'D', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan kebijakan risiko imbal hasil' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 5,
+                                question: "Manakah pernyataan di bawah ini yang merupakan bagian dari tata kelola untuk risiko imbal hasil (risk governance)?",
+                                options: [
+                                    { key: 'A', text: 'Perumusan tingkat risiko yang akan diambil (risk appetite dan risk tolerance)' },
+                                    { key: 'B', text: 'Strategi Manajemen Risiko yang searah dengan tingkat risiko yang akan diambil' },
+                                    { key: 'C', text: 'Petunjuk pelaksanaan Manajemen Risiko yang searah dengan tingkat risiko yang akan diambil' },
+                                    { key: 'D', text: 'Strategi bisnis yang searah dengan tingkat risiko yang akan diambil' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secE: {
+                        title: "E. Mengelola Risiko Operasional",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko terkait keamanan siber (Cyber Risk) merupakan bagian dari Risiko Operasional yang semakin signifikan dan sering terjadi serta berdampak besar di operasional Bank. Di bawah ini adalah dampak dari risiko siber pada risiko operasional, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'downtime layanan & gangguan proses inti' },
+                                    { key: 'B', text: 'kompromi data' },
+                                    { key: 'C', text: 'kegagalan dalam penerapan SOP' },
+                                    { key: 'D', text: 'peningkatan frekuensi/keparahan insiden' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C. kegagalan dalam penerapan SOP."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam melaksanakan pengukuran risiko operasional Bank mempunyai kepentingan sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk membentuk organisasi risiko operasional' },
+                                    { key: 'B', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur risk bearing capacity Bank' },
+                                    { key: 'C', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur kecukupan modal bank dalam mengantisipasi risiko operasional' },
+                                    { key: 'D', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk menetapkan risk heat map' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai Surat Edaran SEOJK Nomor 6/SEOJK.03/2020 tentang Perhitungan Aset Tertimbang Menurut Risiko untuk Risiko Operasional dengan Menggunakan Pendekatan Standar bagi Bank Umum, ditetapkan ATMR risiko operasional adalah:",
+                                options: [
+                                    { key: 'A', text: 'ATMR risiko operasional = 12,5 x MMRO (modal minimum risiko operasional)' },
+                                    { key: 'B', text: 'ATMR risiko operasional = 10,5 x MMRO (modal minimum risiko operasional)' },
+                                    { key: 'C', text: 'ATMR risiko operasional = 11,5 x MMRO (modal minimum risiko operasional)' },
+                                    { key: 'D', text: 'ATMR risiko operasional = 13,5 x MMRO (modal minimum risiko operasional)' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah di bawah ini yang BUKAN merupakan hal yang perlu dianalisis terhadap eksposur risiko operasional:",
+                                options: [
+                                    { key: 'A', text: 'Bagaimana menurunkan frekuensi terjadinya risiko operasional baik per event kejadian maupun akumulasi event per tahun' },
+                                    { key: 'B', text: 'Bagaimana menurunkan dampak dari terjadinya risiko operasional baik per event kejadian maupun akuulasi event per tahun' },
+                                    { key: 'C', text: 'Bagaimana memitigasi agar eksposur risiko operasional dapat dikendalikan sesuai dengan risk inherent dan mash dibawah risk tolerance' },
+                                    { key: 'D', text: 'Bagaimana agar eksposur risiko operasional dapat dihindari sesuai dengan risk appetite dan risk tolerance' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan SEOJK Nomor 34/SEOJK.03/2016 Tentang Penerapan Manajemen Risiko bagi Bank Umum maka penilaian kualitas penerapan manajemen risiko operasional mencerminkan penilaian terhadap:",
+                                options: [
+                                    { key: 'A', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup 8 pilar penerapan Manajemen Risiko' },
+                                    { key: 'B', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup seluruh 6 penerapan Manajemen Risiko' },
+                                    { key: 'C', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup seluruh pilar penerapan Manajemen Risiko' },
+                                    { key: 'D', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup 5 pilar penerapan Manajemen Risiko' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secF: {
+                        title: "F. Mengelola Risiko Investasi",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko Investasi yang timbul dari pembiayaan dengan berbasis bagi hasil (revenue sharing atau profit and loss sharing), dapat bersumber dari beberapa faktor, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'pembiayaan bersifat bagi hasil' },
+                                    { key: 'B', text: 'arus kas tidak terjadwal' },
+                                    { key: 'C', text: 'pembiayaan tidak tetap' },
+                                    { key: 'D', text: 'pendapatan/income tidak tetap' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah. Manakah dibawah ini yang BUKAN merupakan parameter atau faktor faktor yang digunakan dalam menilai Risiko Inheren atas Risiko Investasi:",
+                                options: [
+                                    { key: 'A', text: 'Komposisi tingkat konsentrasi pembiayaan berbasis bagi hasil' },
+                                    { key: 'B', text: 'Kualitas pembiayaan berbasis bagi hasil' },
+                                    { key: 'C', text: 'Strategi pembiayaan berbasis bagi hasil' },
+                                    { key: 'D', text: 'Faktor eksternal' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai Peraturan Otoritas Jasa Keuangan nomor 65/POJK.03/2016 tentang Penerapan Manajemen Risiko Bagi Bank Umum Syariah dan Unit Usaha Syariah, manakah pernyataan di bawah ini yang merupakan tujuan dari pemantauan risiko investasi?",
+                                options: [
+                                    { key: 'A', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah sesuai dengan strategi bisnis Bank' },
+                                    { key: 'B', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah melampaui limit yang ditetapkan Bank sesuai dengan Risk Appetite dan Risk Tolerance' },
+                                    { key: 'C', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah mencapai risk bearing capacity' },
+                                    { key: 'D', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah melampaui limit yang ditetapkan Bank sesuai dengan tingkat kecukupan modal' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Sesuai dari POJK nomor 21 tahun 2025 tentang Kewajiban Pemenuhan Rasio Pengungkit bagi Bank Umum Syariah, tujuan dari pengukuran rasio pengungkit adalah:",
+                                options: [
+                                    { key: 'A', text: 'mengukur struktur permodalan bank umum syariah' },
+                                    { key: 'B', text: 'mengukur tingkat kesehatan bank umum syariah' },
+                                    { key: 'C', text: 'mengukur profil risiko bank umum syariah' },
+                                    { key: 'D', text: 'mengukur total eksposur pembiayaan bank umum syariah' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah, tingkat kualitas penerapan manajemen risiko investasi dikategorikan menjadi 5 peringkat. Adapun sesuai urutan peringkat 1 sampai dengan 5 adalah:",
+                                options: [
+                                    { key: 'A', text: 'fair, strong, satisfactory, marginal, unsatisfactory' },
+                                    { key: 'B', text: 'strong, satisfactory, marginal, fair, unsatisfactory' },
+                                    { key: 'C', text: 'strong, satisfactory, fair, marginal, unsatisfactory' },
+                                    { key: 'D', text: 'strong, fair, satisfactory, marginal, unsatisfactory' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    }
+                }
+            },
+            to2: {
+                title: "Try Out 2",
+                sections: {
+                    secA: {
+                        title: "A. Mengelola Risiko Pasar",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Dampak risiko perubahan iklim terhadap risiko pasar yang benar adalah:",
+                                options: [
+                                    { key: 'A', text: 'Risiko fisik hanya berdampak pada risiko kredit, tidak pada risiko pasar' },
+                                    { key: 'B', text: 'Risiko reputasi dapat menyebabkan penurunan volatilitas pasar keuangan' },
+                                    { key: 'C', text: 'Perubahan kebijakan terkait transisi energi dapat menyebabkan volatilitas harga saham perusahaan di sektor energi fosil' },
+                                    { key: 'D', text: 'Risiko perubahan iklim tidak memengaruhi nilai tukar mata uang' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Sesuai surat edaran OJK nomor 14/SEOJK.03/2017 tentang Penilaian Tingkat Kesehatan Bank Umum, manakah di bawah ini yang bukan merupakan parameter atau faktor-faktor yang digunakan?",
+                                options: [
+                                    { key: 'A', text: 'Volume dan Komposisi Aset Trading' },
+                                    { key: 'B', text: 'Strategi dan Kebijakan Bisnis' },
+                                    { key: 'C', text: 'Volume dan Komposisi Portofolio' },
+                                    { key: 'D', text: 'Kerugian Potensial (potential loss) Risiko Suku Bunga dalam Banking Book (IRRBB)' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 3,
+                                question: "Menurut SEOJK Nomor 23/SEOJK.03/2022 tentang Perhitungan Aset Tertimbang Menurut Risiko untuk risiko pasar bagi Bank Umum, Bank hanya dapat menggunakan pendekatan standar yang disederhanakan (simplified standardized approach) dengan memenuhi persyaratan tertentu. Manakah dibawah ini yang bukan persyaratan tersebut?",
+                                options: [
+                                    { key: 'A', text: 'Disetujui oleh Otoritas Jasa Keuangan' },
+                                    { key: 'B', text: 'Bank tidak memiliki eksposur correlation trading positions' },
+                                    { key: 'C', text: 'Bank yang tidak berdampak sistemik' },
+                                    { key: 'D', text: 'Bank yang berdampak sistemik sebagaimana dimaksud dalam Peraturan Otoritas Jasa Keuangan mengenai penetapan bank sistemik dan capital surcharge' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 4,
+                                question: "Untuk pemantauan risiko suku bunga pada Banking Book, laporan pemantauan risiko Interest Rate Risk in Banking Book (IRRBB) yang digunakan paling sedikit harus mencakup asumsi sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'Perilaku interest rate, informasi prepayment dan data-data ekonomi' },
+                                    { key: 'B', text: 'Perilaku non maturity deposit, informasi prepayment dan suku bunga' },
+                                    { key: 'C', text: 'Perilaku non maturity deposit, data-data ekonomi dan suku bunga' },
+                                    { key: 'D', text: 'Perilaku non maturity deposit, informasi prepayment dan data-data ekonomi' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Manakah di bawah ini yang merupakan pengertian profil risiko pasar?",
+                                options: [
+                                    { key: 'A', text: 'Merupakan gambaran secara menyeluruh atas besarnya risiko pasar yang terjadi pada seluruh produk aktivitas Bank' },
+                                    { key: 'B', text: 'Merupakan gambaran secara parsial atas besarnya potensi risiko pasar yang melekat pada seluruh produk aktivitas Bank' },
+                                    { key: 'C', text: 'Merupakan gambaran secara menyeluruh atas besarnya potensi risiko pasar yang melekat pada seluruh produk aktivitas Bank' },
+                                    { key: 'D', text: 'Merupakan gambaran secara menyeluruh atas besarnya potensi risiko pasar yang melekat pada bagian treasury di Bank' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secB: {
+                        title: "B. Mengelola Risiko Likuiditas",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko iklim dapat memengaruhi risiko likuiditas Bank secara langsung maupun tidak langsung, adapun salah satu potensi dampak dari risiko iklim terhadap risiko likuiditas Bank adalah:",
+                                options: [
+                                    { key: 'A', text: 'kenaikan Liquidity Coverage Ratio (LCR)' },
+                                    { key: 'B', text: 'penurunan Liquidity Coverage Ratio (LCR)' },
+                                    { key: 'C', text: 'kenaikan High Quality Liquid Assets (HQLA)' },
+                                    { key: 'D', text: 'penurunan High Quality Liquid Assets (HQLA)' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Tujuan dari pengukuran risiko likuiditas adalah:",
+                                options: [
+                                    { key: 'A', text: 'untuk menetapkan profil risiko likuiditas jangka pendek, untuk mengukur kecukupan likuiditas jangka pendek dan panjang' },
+                                    { key: 'B', text: 'untuk menetapkan profil risiko likuiditas jangka pendek dan jangka panjang' },
+                                    { key: 'C', text: 'untuk menetapkan profil risiko likuiditas, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'D', text: 'untuk menetapkan risiko inheren risiko likuiditas' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Skenario perhitungan LCR merupakan kombinasi dari idiosyncratic maupun marketwide shock, yang akan menyebabkan Bank Syariah mengalami hal seperti ini:",
+                                options: [
+                                    { key: 'A', text: 'Penarikan komitmen kredit yang tidak terjadwal' },
+                                    { key: 'B', text: 'Adanya kebutuhan bank untuk melunasi kewajibannya' },
+                                    { key: 'C', text: 'Peningkatan volatilitas pasar yang berdampak pada kualitas agunan atau potensi risiko ke depan untuk produk derivatif' },
+                                    { key: 'D', text: 'peningkatan volatilitas pasar yang berdampak pada kualitas agunan atau potensi risiko ke depan untuk produk derivatif yang memenuhi prinsip syariah/sharia compliance hedging sesuai fatwa DSN-MUI sehingga memerlukan pengurangan nilai (haircut) agunan yang lebih besar, tambahan agunan atau kebutuhan likuiditas yang lainnya' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 4,
+                                question: "Pemantauan risiko likuiditas yang dilakukan Bank harus memperhatikan indikator peringatan dini untuk mengetahui potensi peningkatan risiko likuiditas Bank. Adapun indikator peringatan dini ini terdiri dari:",
+                                options: [
+                                    { key: 'A', text: 'indikator internal dan faktor-faktor yang mempengaruhi' },
+                                    { key: 'B', text: 'indikator eksternal dan faktor-faktor yang mempengaruhi' },
+                                    { key: 'C', text: 'indikator internal dan indikator eksternal' },
+                                    { key: 'D', text: 'indikator internal dan indikator eksternal dan faktor-faktor yang mempengaruhi' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "Pernyataan di bawah ini merupakan pemahaman mengenai profil risiko likuiditas, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'Profil Risiko Likuiditas merupakan gambaran secara menyeluruh atas besarnya potensi Risiko Likuiditas yang melekat pada seluruh produk dan aktivitas Bank serta kewajiban Bank' },
+                                    { key: 'B', text: 'Profil Risiko Likuiditas merupakan gambaran secara menyeluruh atas besarnya potensi Risiko Likuiditas yang melekat pada seluruh produk dan aktivitas Bank' },
+                                    { key: 'C', text: 'Profil Risiko Likuiditas adalah hasil penilaian atau kesimpulan atas kemampuan Bank' },
+                                    { key: 'D', text: 'Profil Risiko Likuiditas merupakan hasil penilaian akhir atau kesimpulan antara risiko inheren versus KPMR' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secC: {
+                        title: "C. Mengelola Risiko Kredit",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko perubahan iklim, dibagi dalam 3 jenis, yaitu Risiko Fisik (Physical Risks), Risiko Transisi (Transition Risks) dan Risiko Reputasi (Reputation Risks). Pernyataan yang benar berkaitan dengan jenis Risiko Reputasi (Reputation Risks), adalah:",
+                                options: [
+                                    { key: 'A', text: 'Kerusakan aset yang dijaminkan kepada lembaga keuangan, akibat Banjir atau kebakaran hutan' },
+                                    { key: 'B', text: 'Hilangnya kepercayaan investor atau publik karena Debitur gagal memenuhi standar lingkungan' },
+                                    { key: 'C', text: 'Penurunan nilai aset Debitur di sektor energi fosil akibat regulasi pembatasan emisi karbon' },
+                                    { key: 'D', text: 'Jawaban a, b dan c salah semua' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Metode pengukuran risiko kredit dengan menggunakan Standardized Approach Basel III Reforms berbeda dengan Standardized Approach Basel II, manakah yang merupakan salah satu perbedaan antara Basel III Reforms dengan Basel II?",
+                                options: [
+                                    { key: 'A', text: 'Basel II mempunyai 15 kategori portofolio sedangkan Basel III Reforms mempunyai 12 kategori portofolio' },
+                                    { key: 'B', text: 'Basel II mempunyai 15 kategori portofolio dan bobot risiko sedangkan Basel III Reforms mempunyai 12 kategori' },
+                                    { key: 'C', text: 'Basel II mempunyai 12 kategori portofolio dan bobot risiko sedangkan Basel III Reforms mempunyai 15 kategori portofolio dan bobot risiko' },
+                                    { key: 'D', text: 'Basel II mempunyai 12 kategori portfolio' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai POJK, untuk menghitung modal minimum Bank yang bersumber dari risiko kredit digunakan metode:",
+                                options: [
+                                    { key: 'A', text: 'Internal Rating Model dan Gross Value Model' },
+                                    { key: 'B', text: 'Standardized Approach dan Internal Rating Based Approach (SA dan IRBA)' },
+                                    { key: 'C', text: 'Model Internal dan Model Eksternal' },
+                                    { key: 'D', text: 'Credit Metrics' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Agar dapat menganalisis eksposur risiko kredit sesuai limit maka Bank harus menetapkan dan memiliki limit risiko kredit yang sesuai dengan tingkat risiko kredit yang akan diambil. Komponen yang tidak dipakai dalam analisis dan pemantauan risiko kredit bank adalah:",
+                                options: [
+                                    { key: 'A', text: 'Strategi bank secara komprehensif' },
+                                    { key: 'B', text: 'Risk aversion' },
+                                    { key: 'C', text: 'Risk tolerance' },
+                                    { key: 'D', text: 'Risk appetite' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B. Risk aversion."
+                            },
+                            {
+                                id: 5,
+                                question: "Penilaian kualitas penerapan manajemen risiko kredit merupakan penilaian terhadap 4 (empat) aspek yang saling terkait. Manakah di bawah ini yang bukan merupakan aspek dalam penilaian kualitas penerapan manajemen risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'Kecukupan sistem pengendalian risiko kredit dengan memperhatikan karakteristik dan kompleksitas usaha bank' },
+                                    { key: 'B', text: 'Tata kelola perusahaan' },
+                                    { key: 'C', text: 'Kerangka Manajemen risiko kredit' },
+                                    { key: 'D', text: 'Proses Manajemen risiko kredit, kecukupan sumber daya manusia, dan kecukupan sistem informasi manajemen' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            }
+                        ]
+                    },
+                    secD: {
+                        title: "D. Mengelola Risiko Imbal Hasil",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Rate sensitive liabilities (RSL) adalah kewajiban Bank dimana bunga yang harus dibayar tergantung pada suku bunga pasar. Manakah dibawah yang BUKAN merupakan RSL?",
+                                options: [
+                                    { key: 'A', text: 'giro dan tabungan' },
+                                    { key: 'B', text: 'kredit dan surat berharga' },
+                                    { key: 'C', text: 'deposito' },
+                                    { key: 'D', text: 'deposito dan surat berharga' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam pengukuran risiko imbal hasil pada perbankan Syariah hampir serupa dengan risiko suku bunga di banking book pada perbankan konvensional. Pengukuran risiko suku bunga pada Bank konvensional adalah dengan menggunakan metode:",
+                                options: [
+                                    { key: 'A', text: 'analisis repricing gap dan analisis sumber dana' },
+                                    { key: 'B', text: 'analisis sumber dana dan analisis duration gap' },
+                                    { key: 'C', text: 'analisis repricing gap dan analisis duration gap' },
+                                    { key: 'D', text: 'simplified standised approach dan standard approach' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Salah satu parameter utama atau indikator dalam penilaian risiko inheren imbal hasil yang terkait dengan Strategi dan Kinerja Bank dalam menghasilkan Pendapatan/Laba adalah:",
+                                options: [
+                                    { key: 'A', text: 'Margin pembiayaan' },
+                                    { key: 'B', text: 'Laba sebelum pajak' },
+                                    { key: 'C', text: 'Perbandingan Pembiayaan bermasalah terhadap Total pembiayaan' },
+                                    { key: 'D', text: 'Perbandingan Dana pihak ketiga terhadap aset produktif' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 4,
+                                question: "Sesuai POJK Nomor 65/POJK.03/2016 Tentang Penerapan Manajemen Risiko Bagi Bank Umum Syariah dan Unit Usaha Syariah, dalam pelaksanaan pemantauan Risiko Imbal Hasil, Bank wajib paling sedikit melakukan hal-hal sebagaimana di bawah ini:",
+                                options: [
+                                    { key: 'A', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan SOP' },
+                                    { key: 'B', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan proses pelaporan dalam hal terdapat perubahan kegiatan usaha, produk, transaksi, faktor risiko, teknologi informasi dan sistem informasi manajemen risiko yang bersifat material' },
+                                    { key: 'C', text: 'Penyempurnaan proses pelaporan dalam hal terdapat perubahan kegiatan usaha' },
+                                    { key: 'D', text: 'Evaluasi terhadap eksposur risiko dan Penyempurnaan kebijakan' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 5,
+                                question: "Manakah pernyataan di bawah ini yang merupakan bagian dari tata kelola untuk risiko imbal hasil (risk governance)?",
+                                options: [
+                                    { key: 'A', text: 'Perumusan tingkat risiko yang akan diambil (risk appetite dan risk tolerance)' },
+                                    { key: 'B', text: 'Strategi Manajemen Risiko yang searah' },
+                                    { key: 'C', text: 'Petunjuk pelaksanaan Manajemen Risiko' },
+                                    { key: 'D', text: 'Strategi bisnis yang searah' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secE: {
+                        title: "E. Mengelola Risiko Operasional",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko Perubahan Iklim (Climate Risk) berdampak langsung terhadap Risiko Operasional, yaitu sebagai berikut, kecuali:",
+                                options: [
+                                    { key: 'A', text: 'Kerusakan Aset Fisik debitur' },
+                                    { key: 'B', text: 'Penurunan Nilai Aset' },
+                                    { key: 'C', text: 'Peningkatan Biaya Operasional' },
+                                    { key: 'D', text: 'Stabilitas Operasional' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam melaksanakan pengukuran risiko operasional Bank mempunyai kepentingan sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk menetapkan risk heat map' },
+                                    { key: 'B', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk membentuk organisasi risiko' },
+                                    { key: 'C', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur risk bearing capacity' },
+                                    { key: 'D', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur kecukupan modal bank dalam mengantisipasi risiko operasional' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 3,
+                                question: "Komponen Indikator Bisnis dalam pengukuran risiko operasional standardized Basel III Reforms adalah sebagai berikut di bawah ini:",
+                                options: [
+                                    { key: 'A', text: 'Komponen bunga, sewa dan deviden + komponen kerugian + komponen keuangan' },
+                                    { key: 'B', text: 'Komponen bunga, sewa dan deviden + komponen jasa + komponen kerugian' },
+                                    { key: 'C', text: 'Komponen bunga, sewa dan deviden + komponen jasa + komponen biaya asuransi' },
+                                    { key: 'D', text: 'Komponen bunga, sewa dan deviden + komponen jasa + komponen keuangan' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Pernyataan berikut di bawah ini merupakan prosedur dan penetapan limit risiko operasional, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'Pelaksanaan kaji ulang terhadap prosedur dan penetapan limit risiko operasional secara berkala' },
+                                    { key: 'B', text: 'Akuntabilitas dan jenjang delegasi wewenang yang jelas' },
+                                    { key: 'C', text: 'Dokumentasi prosedur dan penetapan limit secara memadai' },
+                                    { key: 'D', text: 'Penetapan limit risiko operasional diberikan kepada Kepala Unit Kerja' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan Nomor 34/SEOJK.03/2016 Tentang Penerapan Manajemen Risiko Bagi Bank Umum, penilaian kualitas penerapan manajemen risiko operasional mencerminkan penilaian terhadap:",
+                                options: [
+                                    { key: 'A', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup 5 pilar' },
+                                    { key: 'B', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup 8 pilar' },
+                                    { key: 'C', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup seluruh 6 penerapan' },
+                                    { key: 'D', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup seluruh pilar penerapan Manajemen Risiko' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            }
+                        ]
+                    },
+                    secF: {
+                        title: "F. Mengelola Risiko Investasi",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko Investasi yang timbul dari pembiayaan dengan berbasis bagi hasil (revenue sharing atau profit and loss sharing), dapat bersumber dari beberapa faktor, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'pembiayaan bersifat bagi hasil' },
+                                    { key: 'B', text: 'arus kas tidak terjadwal' },
+                                    { key: 'C', text: 'pembiayaan tidak tetap' },
+                                    { key: 'D', text: 'pendapatan/income tidak tetap' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah. Manakah dibawah ini yang BUKAN merupakan parameter atau faktor-faktor yang digunakan dalam menilai Risiko Inheren atas Risiko Investasi:",
+                                options: [
+                                    { key: 'A', text: 'Komposisi tingkat konsentrasi pembiayaan berbasis bagi hasil' },
+                                    { key: 'B', text: 'Kualitas pembiayaan berbasis bagi hasil' },
+                                    { key: 'C', text: 'Strategi pembiayaan berbasis bagi hasil' },
+                                    { key: 'D', text: 'Faktor eksternal' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai Peraturan Otoritas Jasa Keuangan nomor 65/POJK.03/2016 tentang Penerapan Manajemen Risiko Bagi Bank Umum Syariah dan Unit Usaha Syariah, manakah pernyataan di bawah ini yang merupakan tujuan dari pemantauan risiko investasi?",
+                                options: [
+                                    { key: 'A', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah sesuai dengan strategi bisnis Bank' },
+                                    { key: 'B', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah melampaui limit yang ditetapkan Bank sesuai dengan Risk Appetite dan Risk Tolerance' },
+                                    { key: 'C', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah mencapai risk bearing capacity' },
+                                    { key: 'D', text: 'untuk mengetahui apakah Risiko Investasi yang terjadi telah melampaui limit yang ditetapkan Bank sesuai dengan tingkat kecukupan modal' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Sesuai dari POJK nomor 21 tahun 2025 tentang Kewajiban Pemenuhan Rasio Pengungkit bagi Bank Umum Syariah, tujuan dari pengukuran rasio pengungkit adalah:",
+                                options: [
+                                    { key: 'A', text: 'mengukur struktur permodalan bank umum syariah' },
+                                    { key: 'B', text: 'mengukur tingkat kesehatan bank umum syariah' },
+                                    { key: 'C', text: 'mengukur profil risiko bank umum syariah' },
+                                    { key: 'D', text: 'mengukur total eksposur pembiayaan bank umum syariah' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah, tingkat kualitas penerapan manajemen risiko investasi dikategorikan menjadi 5 peringkat. Adapun sesuai urutan peringkat 1 sampai dengan 5 adalah:",
+                                options: [
+                                    { key: 'A', text: 'fair, strong, satisfactory, marginal, unsatisfactory' },
+                                    { key: 'B', text: 'strong, satisfactory, marginal, fair, unsatisfactory' },
+                                    { key: 'C', text: 'strong, satisfactory, fair, marginal, unsatisfactory' },
+                                    { key: 'D', text: 'strong, fair, satisfactory, marginal, unsatisfactory' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    }
+                }
+            },
+            to3: {
+                title: "Try Out 3",
+                sections: {
+                    secA: {
+                        title: "A. Mengelola Risiko Kredit",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko perubahan iklim dapat mempengaruhi secara langsung kualitas kredit yang diberikan oleh Bank kepada debitur. Transmisi risiko perubahan iklim ini dapat berdampak pada risiko kredit, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'kerusakan aset fisik' },
+                                    { key: 'B', text: 'penurunan nilai aset' },
+                                    { key: 'C', text: 'perubahan suku bunga' },
+                                    { key: 'D', text: 'peningkatan biaya operasional debitur' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Manakah pernyataan di bawah ini yang merupakan tujuan dalam melakukan pengukuran risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'untuk menetapkan profil risiko kredit' },
+                                    { key: 'B', text: 'untuk mengukur kecukupan modal Bank dalam mengantisipasi risiko kredit' },
+                                    { key: 'C', text: 'untuk menetapkan profil risiko kredit dan mengatasi kredit macet' },
+                                    { key: 'D', text: 'untuk menetapkan profil risiko kredit dan untuk mengukur kecukupan modal Bank dalam mengantisipasi risiko kredit' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 3,
+                                question: "Metode pengukuran risiko kredit dengan menggunakan Standardized Approach Basel III Reforms berbeda dengan Standardized Approach Basel II, manakah yang merupakan salah satu perbedaan antara Basel III Reforms dengan Basel II?",
+                                options: [
+                                    { key: 'A', text: 'Basel II mempunyai 15 kategori portfolio dan bobot risiko sedangkan Basel III Reforms mempunyai 12' },
+                                    { key: 'B', text: 'Basel II mempunyai 15 kategori portofolio sedangkan Basel III Reforms mempunyai 12' },
+                                    { key: 'C', text: 'Basel II mempunyai 12 kategori portofolio dan bobot risiko sedangkan Basel III Reforms mempunyai 15 kategori portofolio dan bobot risiko' },
+                                    { key: 'D', text: 'Basel II mempunyai 12 kategori portfolio' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah pernyataan di Bawah ini yang merupakan tujuan dari prosedur pemantauan risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'menangani dengan cepat kredit bermasalah' },
+                                    { key: 'B', text: 'prosedur pemantauan harus mampu mengidentifikasikan aset yang bermasalah atau transaksi lainnya untuk menjamin bahwa aset yang bermasalah tersebut mendapat perhatian yang lebih, termasuk tindakan penyelamatan serta pembentukan cadangan yang cukup' },
+                                    { key: 'C', text: 'memahami kondisi keuangan terkini' },
+                                    { key: 'D', text: 'menilai kecukupan agunan' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 5,
+                                question: "Penilaian kualitas penerapan Manajemen Risiko kredit merupakan penilaian terhadap 4 (empat) aspek yang saling terkait. Manakah di bawah ini yang BUKAN merupakan aspek dalam penilaian kualitas penerapan manajemen risiko kredit?",
+                                options: [
+                                    { key: 'A', text: 'Tata kelola perusahaan' },
+                                    { key: 'B', text: 'Kerangka Manajemen risiko kredit' },
+                                    { key: 'C', text: 'Proses Manajemen risiko kredit, kecukupan sumber daya manusia, dan kecukupan sistem informasi manajemen' },
+                                    { key: 'D', text: 'Kecukupan sistem pengendalian risiko kredit dengan memperhatikan karakteristik dan kompleksitas usaha bank' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secB: {
+                        title: "B. Mengelola Risiko Imbal Hasil",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Manakah dibawah ini yang BUKAN merupakan langkah langkah dalam penerapan proses identifikasi risiko imbal hasil:",
+                                options: [
+                                    { key: 'A', text: 'Menetapkan faktor-faktor Kualitas Penerapan Manajemen Risiko Imbal Hasil.' },
+                                    { key: 'B', text: 'Menganalisa Data dan Informasi Risiko Imbal Hasil.' },
+                                    { key: 'C', text: 'Menetapkan faktor-faktor kuantitas Penerapan Manajemen Risiko Imbal Hasil.' },
+                                    { key: 'D', text: 'Menetapkan faktor faktor Risiko Inheren Imbal Hasil' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam pengukuran risiko imbal hasil pada perbankan Syariah hampir serupa dengan risiko suku bunga di banking book pada perbankan konvensional. Pengukuran risiko suku bunga pada Bank konvensional adalah dengan menggunakan metode:",
+                                options: [
+                                    { key: 'A', text: 'Simplified standardized approach dan standard approach' },
+                                    { key: 'B', text: 'Analisis repricing gap dan analisis sumber dana' },
+                                    { key: 'C', text: 'Analisis sumber dana dan analisis duration gap' },
+                                    { key: 'D', text: 'Analisis repricing gap dan analisis duration gap' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 3,
+                                question: "Penyisihan sejumlah dana oleh BUS untuk mempertahankan imbal hasil sebelum diberikan kepada nasabah dikenal sebagai:",
+                                options: [
+                                    { key: 'A', text: 'Net profit reserve' },
+                                    { key: 'B', text: 'Profit and loss sharing' },
+                                    { key: 'C', text: 'Net revenue sharing' },
+                                    { key: 'D', text: 'Profit equalization reserve' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D. Profit equalization reserve."
+                            },
+                            {
+                                id: 4,
+                                question: "Pemantauan risiko imbal hasil dilakukan untuk mengetahui apakah risiko imbal hasil yang terjadi telah melampaui limit yang ditetapkan Bank sesuai dengan:",
+                                options: [
+                                    { key: 'A', text: 'Risk default' },
+                                    { key: 'B', text: 'Risk tolerance' },
+                                    { key: 'C', text: 'Risk appetite' },
+                                    { key: 'D', text: 'Jawaban b dan c benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan pengelolaan risiko imbal hasil pada akhirnya disampaikan dalam bentuk profil risiko imbal hasil yang merupakan hasil penilaian atas:",
+                                options: [
+                                    { key: 'A', text: 'Penilaian inheren risk risiko imbal hasil' },
+                                    { key: 'B', text: 'Penilaian atas kualitas penerapan manajemen risiko' },
+                                    { key: 'C', text: 'Penilaian atas inheren risk dan kualitas penerapan manajemen risiko' },
+                                    { key: 'D', text: 'Semua jawaban salah' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secC: {
+                        title: "C. Mengelola Risiko Pasar",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko iklim dapat memengaruhi eksposur risiko pasar bank secara langsung, salah satu dampak dari perubahan iklim terhadap risiko pasar adalah:",
+                                options: [
+                                    { key: 'A', text: 'kerusakan aset fisik' },
+                                    { key: 'B', text: 'volatilitas harga instrumen keuangan' },
+                                    { key: 'C', text: 'penurunan nilai aset' },
+                                    { key: 'D', text: 'peningkatan biaya operasional debitur' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Salah satu Faktor penilaian risiko inheren pada risiko pasar adalah Volume dan Komposisi Portofolio. Manakah parameter atau indikator yang TIDAK digunakan dalam menilai Volume dan Komposisi Portofolio?",
+                                options: [
+                                    { key: 'A', text: 'Total Derivatif dan FVO / Total Aset' },
+                                    { key: 'B', text: 'Kewajiban Trading, Derivatif dan FVO / Total Aset' },
+                                    { key: 'C', text: 'Total Structured Product / Total Aset' },
+                                    { key: 'D', text: 'Total Derivatif / Total Aset' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 3,
+                                question: "Menurut SEOJK Nomor 23/SEOJK.03/2022 tentang Perhitungan Aset Tertimbang Menurut Risiko untuk Risiko Pasar bagi Bank Umum, Bank hanya dapat menggunakan pendekatan standar yang disederhanakan (simplified standardized approach) dengan memenuhi persyaratan tertentu. Manakah dibawah ini yang BUKAN persyaratan tersebut?",
+                                options: [
+                                    { key: 'A', text: 'Bank yang tidak berdampak sistemik' },
+                                    { key: 'B', text: 'Bank yang berdampak sistemik sebagaimana dimaksud dalam Peraturan Otoritas Jasa Keuangan mengenai penetapan bank sistemik dan capital surcharge' },
+                                    { key: 'C', text: 'Bank tidak memiliki eksposur correlation trading positions' },
+                                    { key: 'D', text: 'disetujui oleh Otoritas Jasa Keuangan' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah pernyataan di bawah ini yang TIDAK TEPAT dalam melakukan analisis eksposur risiko pasar?",
+                                options: [
+                                    { key: 'A', text: 'Bagaimana menurunkan frekuensi terjadinya risiko pasar' },
+                                    { key: 'B', text: 'Bagaimana menurunkan dampak dari terjadinya risiko pasar baik per event kejadian maupun akumulasi event per tahun' },
+                                    { key: 'C', text: 'Bagaimana memitigasi agar eksposur risiko pasar dapat dikendalikan' },
+                                    { key: 'D', text: 'Bagaimana menghindari ekposur risiko pasar akibat faktor eksternal' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Manakah di bawah ini yang merupakan pengertian profil risiko pasar?",
+                                options: [
+                                    { key: 'A', text: 'merupakan gambaran secara parsial atas besarnya potensi risiko pasar' },
+                                    { key: 'B', text: 'merupakan gambaran secara menyeluruh atas besarnya risiko pasar yang terjadi pada seluruh produk aktivitas Bank' },
+                                    { key: 'C', text: 'merupakan gambaran secara menyeluruh atas besarnya potensi risiko pasar yang melekat pada seluruh produk aktivitas Bank' },
+                                    { key: 'D', text: 'merupakan gambaran secara menyeluruh atas bagian treasuri' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secD: {
+                        title: "D. Mengelola Risiko Investasi",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Sesuai Peraturan Otoritas Jasa Keuangan nomor 65/POJK.03/2016 tentang Penerapan Manajemen Risiko Bagi Bank Umum Syariah dan Unit Usaha Syariah. Manakah pernyataan dibawah ini yang merupakan penjelasan dari risiko investasi:",
+                                options: [
+                                    { key: 'A', text: 'Risiko akibat Bank ikut menanggung kerugian usaha nasabah yang dibiayai dalam pembiayaan yang menggunakan metode revenue sharing maupun metode profit and loss sharing' },
+                                    { key: 'B', text: 'Risiko akibat Bank ikut menanggung kerugian usaha nasabah yang dibiayai dalam pembiayaan berbasis bagi hasil baik yang menggunakan metode net revenue sharing maupun metode profit and loss sharing' },
+                                    { key: 'C', text: 'Risiko akibat perubahan tingkat investasi yang dibayarkan Bank' },
+                                    { key: 'D', text: 'Risiko akibat Bank ikut menanggung kerugian usaha nasabah' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah, manakah dibawah ini yang BUKAN merupakan parameter atau faktor-faktor yang digunakan dalam menilai risiko inheren atas risiko investasi:",
+                                options: [
+                                    { key: 'A', text: 'Kualitas pembiayaan berbasis bagi hasil' },
+                                    { key: 'B', text: 'Faktor eksternal' },
+                                    { key: 'C', text: 'Strategi pembiayaan berbasis bagi hasil' },
+                                    { key: 'D', text: 'Komposisi Tingkat Konsentrasi pembiayaan berbasis bagi hasil' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Metode dan alat pengukuran Risiko Investasi harus diselaraskan dengan Strategi Bisnis Bank, oleh karena itu Bank harus:",
+                                options: [
+                                    { key: 'A', text: 'Memiliki sistem dan prosedur tertulis untuk melakukan pengukuran Risiko Imbal Hasil' },
+                                    { key: 'B', text: 'Salah satu model yang dapat digunakan Bank adalah metodologi statistik atau probabilistik untuk mengukur Risiko yang berkaitan dengan jenis tertentu dari transaksi Risiko Investasi, seperti credit scoring tools' },
+                                    { key: 'C', text: 'Alat pengukuran harus dapat mengukur eksposur' },
+                                    { key: 'D', text: 'Jawaban a dan c benar' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Sistem pemantauan Risiko Investasi paling sedikit memuat:",
+                                options: [
+                                    { key: 'A', text: 'Mengidentifikasi ketidaktepatan waktu pembayaran' },
+                                    { key: 'B', text: 'Memantau kepatuhan terhadap persyaratan dalam perjanjian pembiayaan' },
+                                    { key: 'C', text: 'Bahwa Bank mengetahui kondisi keuangan terakhir dari pihak lawan (bank dan non bank)' },
+                                    { key: 'D', text: 'Semua jawaban benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan pengelolaan risiko investasi selain disampaikan secara berkala dan harus memenuhi persyaratan-persyaratan tertentu. Di bawah ini mana yang merupakan persyaratan laporan pengelolaan risiko investasi:",
+                                options: [
+                                    { key: 'A', text: 'Terkini, lengkap, periodik dan continue' },
+                                    { key: 'B', text: 'Lengkap, terkini, continue dan utuh' },
+                                    { key: 'C', text: 'Lengkap, akurat, periodik dan terkini' },
+                                    { key: 'D', text: 'Utuh, terkini, lengkap dan akurat' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            }
+                        ]
+                    },
+                    secE: {
+                        title: "E. Mengelola Risiko Likuiditas",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Menurut SE OJK Nomor 14/SEOJK.03/2017 tentang Penilaian Tingkat Kesehatan Bank Umum, terdapat 4 parameter atau faktor-faktor yang digunakan dalam menilai risiko inheren atas risiko likuiditas. Di bawah ini manakah yang BUKAN parameter dalam penilaian risiko inheren dari risiko likuiditas:",
+                                options: [
+                                    { key: 'A', text: 'Karakteristik dan Kompleksitas bisnis' },
+                                    { key: 'B', text: 'Kerentanan pada kebutuhan pendanaan' },
+                                    { key: 'C', text: 'Akses pada sumber-sumber pendanaan' },
+                                    { key: 'D', text: 'Komposisi dari aset, liabilitas, dan transaksi rekening administratif' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 2,
+                                question: "Cakupan laporan NSFR yang harus disampaikan kepada OJK, meliputi:",
+                                options: [
+                                    { key: 'A', text: 'Laporan bank secara konsolidasi dan self assessment' },
+                                    { key: 'B', text: 'Laporan bank secara individu dan self assessment' },
+                                    { key: 'C', text: 'Laporan bank secara individu dan secara konsolidasi' },
+                                    { key: 'D', text: 'Laporan bank secara konsolidasi saja' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Tujuan dari pengukuran risiko likuiditas adalah:",
+                                options: [
+                                    { key: 'A', text: 'Untuk menetapkan risiko inheren risiko likuiditas' },
+                                    { key: 'B', text: 'Untuk menetapkan profil risiko likuiditas, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang untuk mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'C', text: 'Untuk menetapkan profil risiko likuiditas jangka pendek' },
+                                    { key: 'D', text: 'Untuk menetapkan profil risiko likuiditas jangka pendek dan panjang' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Skenario perhitungan LCR merupakan kombinasi dari idiosyncratic maupun market-wide shock. Yang bukan merupakan skenario perhitungan LCR:",
+                                options: [
+                                    { key: 'A', text: 'Peningkatan arus keluar (outflow) akibat penurunan rating bank' },
+                                    { key: 'B', text: 'Penarikan sebagian simpanan nasabah perorangan (retail deposit)' },
+                                    { key: 'C', text: 'Peningkatan arus keluar (outflow) akibat penurunan risiko bank' },
+                                    { key: 'D', text: 'Peningkatan arus masuk (inflow) akibat kenaikan rating bank' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan Perhitungan Kewajiban Pemenuhan Rasio Kecukupan Likuiditas (Liquidity Coverage Ratio) kepada OJK disampaikan secara:",
+                                options: [
+                                    { key: 'A', text: 'Bulanan' },
+                                    { key: 'B', text: 'Triwulanan' },
+                                    { key: 'C', text: 'Semesteran' },
+                                    { key: 'D', text: 'Tahunan' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A. Bulanan."
+                            }
+                        ]
+                    },
+                    secF: {
+                        title: "F. Mengelola Risiko Operasional",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko terkait keamanan siber (Cyber Risk) merupakan bagian dari Risiko Operasional yang semakin signifikan dan sering terjadi serta berdampak besar di operasional Bank. Di bawah ini adalah dampak dari risiko siber pada risiko operasional, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'downtime layanan & gangguan proses inti' },
+                                    { key: 'B', text: 'kompromi data' },
+                                    { key: 'C', text: 'kegagalan dalam penerapan SOP' },
+                                    { key: 'D', text: 'peningkatan frekuensi/keparahan insiden' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 2,
+                                question: "Dalam melaksanakan pengukuran risiko operasional Bank mempunyai kepentingan sbb.:",
+                                options: [
+                                    { key: 'A', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk membentuk organisasi' },
+                                    { key: 'B', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur risk bearing capacity' },
+                                    { key: 'C', text: 'diperuntukan untuk menetapkan profil risiko operasional Bank dan untuk mengukur kecukupan modal bank dalam mengantisipasi risiko operasional' },
+                                    { key: 'D', text: 'diperuntukan untuk menetapkan risk heat map' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai Surat Edaran SEOJK Nomor 6/SEOJK.03/2020 tentang Perhitungan Aset Tertimbang Menurut Risiko untuk Risiko Operasional dengan Menggunakan Pendekatan Standar bagi Bank Umum, ditetapkan bahwa modal minimum untuk ATMR risiko operasional adalah sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'ATMR risiko operasional = 12,5 x MMRO' },
+                                    { key: 'B', text: 'ATMR risiko operasional = 10,5 x MMRO' },
+                                    { key: 'C', text: 'ATMR risiko operasional = 11,5 x MMRO' },
+                                    { key: 'D', text: 'ATMR risiko operasional = 13,5 x MMRO' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 4,
+                                question: "Manakah di bawah ini yang BUKAN merupakan hal yang perlu dianalisis terhadap eksposur risiko operasional:",
+                                options: [
+                                    { key: 'A', text: 'Bagaimana menurunkan frekuensi terjadinya risiko operasional' },
+                                    { key: 'B', text: 'Bagaimana menurunkan dampak dari terjadinya risiko operasional' },
+                                    { key: 'C', text: 'Bagaimana memitigasi agar eksposur risiko operasional dapat dikendalikan' },
+                                    { key: 'D', text: 'Bagaimana agar eksposur risiko operasional dapat dihindari sesuai dengan risk appetite dan risk tolerance' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan SEOJK Nomor 34/SEOJK.03/2016 Tentang Penerapan Manajemen Risiko bagi Bank Umum maka penilaian kualitas penerapan manajemen risiko operasional mencerminkan penilaian terhadap:",
+                                options: [
+                                    { key: 'A', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup 8 pilar' },
+                                    { key: 'B', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup seluruh 6 penerapan' },
+                                    { key: 'C', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup seluruh pilar penerapan Manajemen Risiko' },
+                                    { key: 'D', text: 'kecukupan sistem pengendalian Risiko Operasional yang mencakup 5 pilar' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    }
+                }
+            },
+            to4: {
+                title: "Try Out 4",
+                sections: {
+                    secA: {
+                        title: "A. Mengelola Risiko Pasar",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko Perubahan Iklim dapat mempengaruhi eksposur risiko pasar bank secara langsung, meliputi berikut ini, kecuali:",
+                                options: [
+                                    { key: 'A', text: 'Volatilitas Harga Instrumen Keuangan' },
+                                    { key: 'B', text: 'Perubahan Suku Bunga' },
+                                    { key: 'C', text: 'Perubahan Nilai Tukar' },
+                                    { key: 'D', text: 'Perubahan transaksi keuangan' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 2,
+                                question: "Sesuai Surat Edaran OJK nomor 14/SEOJK.03/2017 tentang Penilaian Tingkat Kesehatan Bank Umum, manakah di bawah ini yang bukan merupakan parameter atau faktor-faktor yang digunakan?",
+                                options: [
+                                    { key: 'A', text: 'Volume dan Komposisi Aset Trading' },
+                                    { key: 'B', text: 'Strategi dan Kebijakan Bisnis' },
+                                    { key: 'C', text: 'Volume dan Komposisi Portofolio' },
+                                    { key: 'D', text: 'Kerugian Potensial (potential loss) Risiko Suku Bunga dalam Banking Book (IRRBB)' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 3,
+                                question: "Metode Standar (Standardized Approach) dalam pendekatan pengukuran risiko pasar mencakup:",
+                                options: [
+                                    { key: 'A', text: 'Sensitivities-Based Method (SBM), Default Risk Charge (DRC), Systematic Risk Charge (SRC), dan Residual Risk Add-On (RRAO)' },
+                                    { key: 'B', text: 'Sensitivities-Based Method (SBM), Default Risk Charge (DRC), Net Risk Add-On (NRAO), dan Residual Risk Add-On (RRAO)' },
+                                    { key: 'C', text: 'Sensitivities-Based Method (SBM), Default Risk Charge (DRC), dan Residual Risk Add-On (RRAO)' },
+                                    { key: 'D', text: 'Sensitivities-Based Method (SBM) dan Default Risk Charge (DRC)' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 4,
+                                question: "Untuk pemantauan risiko suku bunga pada Banking Book, laporan pemantauan risiko Interest Rate Risk in Banking Book (IRRBB) yang digunakan paling sedikit harus mencakup asumsi sebagai berikut, kecuali:",
+                                options: [
+                                    { key: 'A', text: 'Informasi prepayment' },
+                                    { key: 'B', text: 'Data-data ekonomi' },
+                                    { key: 'C', text: 'Perilaku non maturity deposit' },
+                                    { key: 'D', text: 'Perilaku maturity deposit' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Bank wajib menyampaikan hasil penilaian sendiri (self assessment) Tingkat Kesehatan Bank kepada OJK dengan ketentuan sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'Minimal 2 kali dalam setahun dalam periode akhir Juni dan Desember yang harus dilaporkan pada 31 Juli untuk periode laporan Juni dan 31 Januari untuk periode Desember.' },
+                                    { key: 'B', text: 'Semesteran periode akhir Maret, Juni, September dan Desember' },
+                                    { key: 'C', text: 'Setiap bulan' },
+                                    { key: 'D', text: 'Setiap setahun sekali posisi Desember' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    },
+                    secB: {
+                        title: "B. Mengelola Risiko Imbal Hasil",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Pelaksanaan identifikasi Risiko Imbal Hasil, dilakukan sebagai berikut, kecuali:",
+                                options: [
+                                    { key: 'A', text: 'Proses identifikasi Risiko dilakukan terhadap seluruh Risiko secara berkala.' },
+                                    { key: 'B', text: 'Bank harus memastikan ketersediaan metode atau system untuk melakukan proses identifikasi Risiko pada seluruh produk dan kegiatan usaha' },
+                                    { key: 'C', text: 'Proses identifikasi Risiko dilakukan dengan memastikan bahwa Risiko dari produk dan kegiatan usaha baru telah melalui penerapan Manajemen Risiko yang layak.' },
+                                    { key: 'D', text: 'Proses identifikasi Risiko dilakukan terhadap seluruh Risiko secara Insidentil.' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 2,
+                                question: "Manakah pernyataan berikut yang benar mengenai penggunaan pendekatan kuantitatif dalam pengukuran risiko imbal hasil?",
+                                options: [
+                                    { key: 'A', text: 'Hanya digunakan untuk risiko imbal hasil' },
+                                    { key: 'B', text: 'Dapat digunakan jika telah mendapat persetujuan dari OJK dan memiliki model yang handal' },
+                                    { key: 'C', text: 'Selalu digunakan bersama pendekatan kualitatif' },
+                                    { key: 'D', text: 'Tidak relevan untuk bank syariah' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 3,
+                                question: "Dalam pengukuran risiko imbal hasil, kategori kejadian risiko yang biasanya diabaikan karena biaya pengelolaan dan pemantauan lebih tinggi dari pada kerugian yang ditimbulkan adalah:",
+                                options: [
+                                    { key: 'A', text: 'High Frequency/High Impact' },
+                                    { key: 'B', text: 'Low Frequency/Low Impact' },
+                                    { key: 'C', text: 'Low Frequency/High Impact' },
+                                    { key: 'D', text: 'High Frequency/Low Impact' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Siapakah dua satuan kerja utama yang bertanggung jawab secara langsung dalam pemantauan eksposur risiko imbal hasil di bank syariah?",
+                                options: [
+                                    { key: 'A', text: 'Komite Audit dan Unit Kepatuhan' },
+                                    { key: 'B', text: 'Satuan Kerja Audit Internal dan Divisi Treasury' },
+                                    { key: 'C', text: 'Satuan Kerja Operasional Pembiayaan dan Satuan Kerja Manajemen Risiko' },
+                                    { key: 'D', text: 'Direksi dan Dewan Pengawas Syariah' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan pengelolaan risiko imbal hasil pada akhirnya disampaikan dalam bentuk profil risiko imbal hasil yang merupakan hasil penilaian atas:",
+                                options: [
+                                    { key: 'A', text: 'Penilaian inheren risk risiko imbal hasil' },
+                                    { key: 'B', text: 'Penilaian atas kualitas penerapan manajemen risiko' },
+                                    { key: 'C', text: 'Penilaian atas inheren risk dan kualitas penerapan manajemen risiko' },
+                                    { key: 'D', text: 'Semua jawaban salah' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            }
+                        ]
+                    },
+                    secC: {
+                        title: "C. Mengelola Risiko Kredit",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko perubahan iklim, dibagi dalam 3 jenis, yaitu Risiko Fisik (Physical Risks), Risiko Transisi (Transition Risks) dan Risiko Reputasi (Reputation Risks). Pernyataan yang benar berkaitan dengan jenis risiko transisi (transition risk), adalah:",
+                                options: [
+                                    { key: 'A', text: 'Kerusakan aset yang dijaminkan kepada lembaga keuangan, akibat banjir atau kebakaran hutan.' },
+                                    { key: 'B', text: 'Penurunan nilai aset Debitur di sektor energi fosil akibat regulasi pembatasan emisi karbon' },
+                                    { key: 'C', text: 'Hilangnya kepercayaan investor atau publik karena Debitur gagal memenuhi standar lingkungan' },
+                                    { key: 'D', text: 'Jawaban a, b dan c salah semua' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 2,
+                                question: "Metode pengukuran risiko kredit dengan menggunakan Standardized Approach Basel III Reforms berbeda dengan Standardized Approach Basel II, manakah yang merupakan salah satu perbedaan antara Basel III Reforms dengan Basel II?",
+                                options: [
+                                    { key: 'A', text: 'Basel II mempunyai 15 kategori portofolio sedangkan Basel III' },
+                                    { key: 'B', text: 'Basel II mempunyai 15 kategori portofolio dan bobot risiko' },
+                                    { key: 'C', text: 'Basel II mempunyai 12 kategori portofolio dan bobot risiko sedangkan Basel III Reforms mempunyai 15 kategori portofolio dan bobot risiko' },
+                                    { key: 'D', text: 'Basel II mempunyai 12 kategori portofolio' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai POJK, untuk menghitung modal minimum Bank yang bersumber dari risiko kredit digunakan metode:",
+                                options: [
+                                    { key: 'A', text: 'Internal Rating Model dan Gross Value Model' },
+                                    { key: 'B', text: 'Standardized Approach dan Internal Rating Based Approach' },
+                                    { key: 'C', text: 'Model Internal dan Model Eksternal' },
+                                    { key: 'D', text: 'Credit Metrics' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Mana yang termasuk peran Satuan Kerja Operasional Perkreditan dalam pemantauan Risiko Kredit yang benar?",
+                                options: [
+                                    { key: 'A', text: 'Bertanggung jawab atas pelaksanaan kegiatan operasional bank sehari-hari.' },
+                                    { key: 'B', text: 'Bertanggung jawab untuk mengidentifikasi, dan mengukur Risiko' },
+                                    { key: 'C', text: 'Bertanggung jawab untuk memantau, dan mengendalikan risiko' },
+                                    { key: 'D', text: 'Jawaban tidak ada yang benar' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan Tingkat Kesehatan Bank merupakan rangkuman dari beberapa objek laporan, yaitu:",
+                                options: [
+                                    { key: 'A', text: 'Laba tahunan, profil risiko tahunan, posisi modal akhir tahun' },
+                                    { key: 'B', text: 'Neraca tahunan, Rugi Laba tahunan, posisi likuiditas, kualitas kredit' },
+                                    { key: 'C', text: 'Neraca tengah tahunan, Rugi Laba tengah tahunan, Profil Risiko Tengah tahunan' },
+                                    { key: 'D', text: 'Profil Risiko, Tata kelola, Rentabilitas, Kecukupan Permodalan' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            }
+                        ]
+                    },
+                    secD: {
+                        title: "D. Mengelola Risiko Operasional",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Risiko Siber (Cyber Risk) berdampak signifikan terhadap Risiko Operasional, meliputi:",
+                                options: [
+                                    { key: 'A', text: 'Serangan Malware atau Ransomware, menyebabkan kerusakan pada sistem inti perbankan' },
+                                    { key: 'B', text: 'Phishing dan Social Engineering, berupa pencurian informasi sensitif dari nasabah atau karyawan' },
+                                    { key: 'C', text: 'Kelemahan pada Infrastruktur Jaringan, menyebabkan akses tidak sah ke sistem perbankan.' },
+                                    { key: 'D', text: 'Jawaban a, b dan c benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 2,
+                                question: "Proses identifikasi risiko operasional yang memadai paling sedikit harus memperhatikan hal-hal sebagai berikut di bawah ini, KECUALI:",
+                                options: [
+                                    { key: 'A', text: 'Pelaksanaan identifikasi risiko operasional harus dilakukan secara berkala' },
+                                    { key: 'B', text: 'Adanya Chief Risk Officer (CRO)' },
+                                    { key: 'C', text: 'Tersedianya metode atau sistem untuk melakukan identifikasi risiko operasional pada seluruh produk dan aktivitas operasional Bank' },
+                                    { key: 'D', text: 'Dilakukan dengan menganalisa seluruh sumber risiko aktivitas operasional Bank' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 3,
+                                question: "Manakah dari berikut ini yang bukan merupakan faktor yang digunakan untuk menilai Risiko Inheren atas Risiko Operasional Bank menurut SEOJK Nomor 14/SEOJK.03/2017?",
+                                options: [
+                                    { key: 'A', text: 'Faktor Karakteristik dan Kompleksitas Bisnis' },
+                                    { key: 'B', text: 'Faktor Sumber Daya Manusia' },
+                                    { key: 'C', text: 'Faktor Stabilitas Pasar Modal' },
+                                    { key: 'D', text: 'Faktor Teknologi Informasi dan Infrastruktur Pendukung' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 4,
+                                question: "Dalam pelaksanaan pengendalian Risiko Operasional, dilakukan sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'Sesuai Risk Appetite dan Risk Tolerance' },
+                                    { key: 'B', text: 'Bank dapat mengembangkan program untuk memitigasi Risiko Operasional antara lain pengamanan proses teknologi informasi' },
+                                    { key: 'C', text: 'Bank harus melakukan kaji ulang secara berkala terhadap prosedur' },
+                                    { key: 'D', text: 'Jawaban a, b dan c benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 5,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan Nomor 34/SEOJK.03/2016 Tentang Penerapan Manajemen Risiko Bagi Bank Umum, penilaian kualitas penerapan manajemen risiko operasional mencerminkan penilaian terhadap:",
+                                options: [
+                                    { key: 'A', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup 5 pilar' },
+                                    { key: 'B', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup 8 pilar' },
+                                    { key: 'C', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup seluruh 6 penerapan' },
+                                    { key: 'D', text: 'Kecukupan sistem pengendalian risiko operasional yang mencakup seluruh pilar penerapan Manajemen Risiko' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            }
+                        ]
+                    },
+                    secE: {
+                        title: "E. Mengelola Risiko Investasi",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Berikut produk syariah yang berpotensi menimbulkan risiko investasi adalah:",
+                                options: [
+                                    { key: 'A', text: 'Mudharabah dan Musyarakah' },
+                                    { key: 'B', text: 'Murabahah dan Musyarakah' },
+                                    { key: 'C', text: 'Musyarakah dan Salam' },
+                                    { key: 'D', text: 'Murabahah dan Istisna' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A. Mudharabah dan Musyarakah."
+                            },
+                            {
+                                id: 2,
+                                question: "Metode dan alat pengukuran Risiko Investasi harus diselaraskan dengan Strategi Bisnis Bank, oleh karena itu Bank harus:",
+                                options: [
+                                    { key: 'A', text: 'Memiliki sistem dan prosedur tertulis untuk melakukan pengukuran Risiko Imbal Hasil' },
+                                    { key: 'B', text: 'Salah satu model yang dapat digunakan Bank adalah metodologi statistik atau probabilistik untuk mengukur Risiko yang berkaitan dengan jenis tertentu dari transaksi Risiko Investasi, seperti credit scoring tools' },
+                                    { key: 'C', text: 'Alat pengukuran harus dapat mengukur eksposur' },
+                                    { key: 'D', text: 'Jawaban a dan c benar' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 3,
+                                question: "Sesuai Surat Edaran Otoritas Jasa Keuangan nomor 10/SEOJK.03/2014 tentang Penilaian Tingkat Kesehatan Bank Umum Syariah dan Unit Usaha Syariah, manakah dibawah ini yang BUKAN merupakan parameter atau faktor-faktor yang digunakan dalam menilai risiko inheren atas risiko investasi:",
+                                options: [
+                                    { key: 'A', text: 'Kualitas pembiayaan berbasis bagi hasil' },
+                                    { key: 'B', text: 'Faktor eksternal' },
+                                    { key: 'C', text: 'Strategi pembiayaan berbasis bagi hasil' },
+                                    { key: 'D', text: 'Komposisi Tingkat Konsentrasi pembiayaan berbasis bagi hasil' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 4,
+                                question: "Sesuai SEOJK No. 25/SEOJK.03/2023, Bank harus memiliki sistem dan pengendalian untuk memantau kinerja termasuk kinerja keuangan dengan cara sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'Bank harus menyampaikan laporan tahunan kepada nasabah' },
+                                    { key: 'B', text: 'Bank harus membantu dalam penetapan margin keuntungan' },
+                                    { key: 'C', text: 'Bank harus memiliki sistem pengendalian Risiko yang memadai dengan mengacu pada kebijakan dan prosedur yang telah ditetapkan' },
+                                    { key: 'D', text: 'Bank harus menggantikan fungsi Komite Manajemen Risiko' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "BUS (Bank Umum Syariah) wajib menyampaikan laporan kewajiban pemenuhan Rasio Pengungkit, dengan ketentuan sebagai berikut:",
+                                options: [
+                                    { key: 'A', text: 'Berdasarkan posisi akhir triwulan' },
+                                    { key: 'B', text: 'Dilaporkan kepada Otoritas Jasa Keuangan' },
+                                    { key: 'C', text: 'Laporan terdiri dari laporan Total Eksposur Rasio Pengungkit dan laporan perhitungan' },
+                                    { key: 'D', text: 'Jawaban a, b dan c benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            }
+                        ]
+                    },
+                    secF: {
+                        title: "F. Mengelola Risiko Likuiditas",
+                        questions: [
+                            {
+                                id: 1,
+                                question: "Pelaksanaan kaji ulang dan evaluasi terhadap pengukuran Risiko oleh SKMR, mencakup:",
+                                options: [
+                                    { key: 'A', text: 'Metode' },
+                                    { key: 'B', text: 'Asumsi' },
+                                    { key: 'C', text: 'Variabel yang digunakan untuk mengukur Risiko dan menetapkan limit eksposur Risiko' },
+                                    { key: 'D', text: 'Jawaban a, b dan c benar' }
+                                ],
+                                correct: 'D',
+                                explanation: "Kunci Jawaban: D."
+                            },
+                            {
+                                id: 2,
+                                question: "Menurut SE OJK Nomor 14/SEOJK.03/2017 tentang Penilaian Tingkat Kesehatan Bank Umum, terdapat 4 parameter atau faktor-faktor yang digunakan dalam menilai risiko inheren atas risiko likuiditas. Di bawah ini manakah yang BUKAN parameter dalam penilaian risiko inheren dari risiko likuiditas:",
+                                options: [
+                                    { key: 'A', text: 'Karakteristik dan Kompleksitas bisnis' },
+                                    { key: 'B', text: 'Kerentanan pada kebutuhan pendanaan' },
+                                    { key: 'C', text: 'Akses pada sumber-sumber pendanaan' },
+                                    { key: 'D', text: 'Komposisi dari aset, liabilitas, dan transaksi rekening administratif' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            },
+                            {
+                                id: 3,
+                                question: "Tujuan dari pengukuran risiko likuiditas adalah:",
+                                options: [
+                                    { key: 'A', text: 'Untuk menetapkan risiko inheren risiko likuiditas' },
+                                    { key: 'B', text: 'Untuk menetapkan profil risiko likuiditas, untuk mengukur kecukupan likuiditas jangka pendek dalam mengantisipasi risiko likuiditas jangka pendek dan untuk mengukur kecukupan likuiditas jangka panjang dalam mengantisipasi risiko likuiditas jangka panjang' },
+                                    { key: 'C', text: 'Untuk menetapkan profil risiko likuiditas jangka pendek' },
+                                    { key: 'D', text: 'Untuk menetapkan profil risiko likuiditas jangka pendek dan panjang' }
+                                ],
+                                correct: 'B',
+                                explanation: "Kunci Jawaban: B."
+                            },
+                            {
+                                id: 4,
+                                question: "Peran utama SKMR dalam manajemen risiko likuiditas adalah:",
+                                options: [
+                                    { key: 'A', text: 'Menjual aset likuid ke pasar' },
+                                    { key: 'B', text: 'Menghitung rasio LCR mingguan' },
+                                    { key: 'C', text: 'Menyusun dan mengawasi kebijakan risiko likuiditas' },
+                                    { key: 'D', text: 'Memasarkan produk deposito jangka Panjang' }
+                                ],
+                                correct: 'C',
+                                explanation: "Kunci Jawaban: C."
+                            },
+                            {
+                                id: 5,
+                                question: "Laporan Perhitungan Kewajiban Pemenuhan Rasio Kecukupan Likuiditas (Liquidity Coverage Ratio) kepada OJK disampaikan secara:",
+                                options: [
+                                    { key: 'A', text: 'Bulanan' },
+                                    { key: 'B', text: 'Triwulanan' },
+                                    { key: 'C', text: 'Semesteran' },
+                                    { key: 'D', text: 'Tahunan' }
+                                ],
+                                correct: 'A',
+                                explanation: "Kunci Jawaban: A."
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+
+        class TryOutQuizApp {
+            constructor() {
+                this.currentPackageKey = 'to1';
+                this.currentSectionKey = 'secA';
+                this.currentIndex = 0;
+                
+                // Store answers and bookmarks per package
+                this.userAnswers = {}; 
+                this.bookmarks = {}; 
+
+                Object.keys(allPackages).forEach(pkgKey => {
+                    this.userAnswers[pkgKey] = {};
+                    this.bookmarks[pkgKey] = {};
+                    Object.keys(allPackages[pkgKey].sections).forEach(secKey => {
+                        this.userAnswers[pkgKey][secKey] = {};
+                        this.bookmarks[pkgKey][secKey] = {};
+                    });
+                });
+
+                this.timeLeft = 45 * 60; // 45 minutes timer
+                this.timerInterval = null;
+
+                this.init();
+            }
+
+            init() {
+                this.renderSections();
+                this.loadQuestion();
+                this.startTimer();
+                this.updateOverallStats();
+            }
+
+            startTimer() {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                this.timerInterval = setInterval(() => {
+                    if (this.timeLeft > 0) {
+                        this.timeLeft--;
+                        const mins = Math.floor(this.timeLeft / 60);
+                        const secs = this.timeLeft % 60;
+                        document.getElementById('timer-display').innerText = 
+                            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    } else {
+                        clearInterval(this.timerInterval);
+                        alert('Waktu ujian telah habis!');
+                        this.finishQuiz();
+                    }
+                }, 1000);
+            }
+
+            switchPackage(pkgKey) {
+                this.currentPackageKey = pkgKey;
+                const pkg = allPackages[pkgKey];
+                document.getElementById('package-subtitle').innerText = `${pkg.title} (30 Soal / 6 Section)`;
+                
+                // Set first section of new package
+                const firstSecKey = Object.keys(pkg.sections)[0];
+                this.currentSectionKey = firstSecKey;
+                this.currentIndex = 0;
+
+                this.switchView('quiz');
+                this.renderSections();
+                this.loadQuestion();
+            }
+
+            renderSections() {
+                const container = document.getElementById('section-buttons');
+                container.innerHTML = '';
+
+                const pkg = allPackages[this.currentPackageKey];
+                Object.keys(pkg.sections).forEach(key => {
+                    const sec = pkg.sections[key];
+                    const isActive = this.currentSectionKey === key;
+                    const count = sec.questions.length;
+
+                    const answeredCount = Object.values(this.userAnswers[this.currentPackageKey][key]).filter(a => a && a.isChecked).length;
+
+                    const btn = document.createElement('button');
+                    btn.className = `w-full text-left px-3.5 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition flex items-center justify-between ${
+                        isActive 
+                            ? 'bg-indigo-600 text-white shadow-sm' 
+                            : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/60'
+                    }`;
+
+                    btn.innerHTML = `
+                        <div class="flex items-center gap-2.5 truncate">
+                            <i class="fa-solid fa-bookmark ${isActive ? 'text-indigo-200' : 'text-slate-400'}"></i>
+                            <span class="truncate">${sec.title}</span>
+                        </div>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full flex-shrink-0 ${isActive ? 'bg-indigo-500 text-white' : 'bg-slate-200 text-slate-600'}">${answeredCount}/${count}</span>
+                    `;
+
+                    btn.onclick = () => this.switchSection(key);
+                    container.appendChild(btn);
+                });
+            }
+
+            switchSection(secKey) {
+                this.currentSectionKey = secKey;
+                this.currentIndex = 0;
+                this.switchView('quiz');
+                this.renderSections();
+                this.loadQuestion();
+            }
+
+            switchView(viewName) {
+                const quizView = document.getElementById('quiz-view');
+                const summaryView = document.getElementById('summary-view');
+
+                if (viewName === 'quiz') {
+                    quizView.classList.remove('hidden');
+                    summaryView.classList.add('hidden');
+                } else {
+                    quizView.classList.add('hidden');
+                    summaryView.classList.remove('hidden');
+                    this.renderSummary();
+                }
+            }
+
+            loadQuestion() {
+                const pkg = allPackages[this.currentPackageKey];
+                const sec = pkg.sections[this.currentSectionKey];
+                const q = sec.questions[this.currentIndex];
+
+                document.getElementById('section-badge').innerText = sec.title;
+                document.getElementById('question-counter').innerText = `Soal ${this.currentIndex + 1} dari ${sec.questions.length}`;
+                document.getElementById('question-text').innerText = q.question;
+
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+
+                const currentAnsObj = this.userAnswers[this.currentPackageKey][this.currentSectionKey][this.currentIndex];
+                const selectedKey = currentAnsObj ? currentAnsObj.selectedKey : null;
+                const isChecked = currentAnsObj ? currentAnsObj.isChecked : false;
+
+                q.options.forEach(opt => {
+                    const isSelected = selectedKey === opt.key;
+                    let borderClass = 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50';
+                    let bgClass = 'bg-white';
+                    let iconHtml = '';
+
+                    if (isChecked) {
+                        if (opt.key === q.correct) {
+                            borderClass = 'border-emerald-500 bg-emerald-50/50';
+                            bgClass = 'bg-emerald-50/50';
+                            iconHtml = '<i class="fa-solid fa-circle-check text-emerald-600 ml-auto"></i>';
+                        } else if (isSelected && opt.key !== q.correct) {
+                            borderClass = 'border-rose-500 bg-rose-50/50';
+                            bgClass = 'bg-rose-50/50';
+                            iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-600 ml-auto"></i>';
+                        }
+                    } else if (isSelected) {
+                        borderClass = 'border-indigo-600 bg-indigo-50/40 ring-1 ring-indigo-600';
+                        bgClass = 'bg-indigo-50/40';
+                    }
+
+                    const optDiv = document.createElement('div');
+                    optDiv.className = `p-3.5 sm:p-4 rounded-xl border ${borderClass} ${bgClass} cursor-pointer transition flex items-center justify-between text-sm sm:text-base font-medium text-slate-700`;
+                    optDiv.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center font-semibold text-slate-600 text-sm flex-shrink-0">${opt.key.toUpperCase()}</span>
+                            <span>${opt.text}</span>
+                        </div>
+                        ${iconHtml}
+                    `;
+
+                    if (!isChecked) {
+                        optDiv.onclick = () => this.selectOption(opt.key);
+                    }
+                    optionsContainer.appendChild(optDiv);
+                });
+
+                const expBox = document.getElementById('explanation-box');
+                if (isChecked) {
+                    expBox.classList.remove('hidden');
+                    const isCorrect = selectedKey === q.correct;
+                    expBox.className = `rounded-xl p-5 mb-6 border ${isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-rose-50 border-rose-200 text-rose-900'}`;
+                    document.getElementById('explanation-title').innerText = isCorrect ? 'Jawaban Anda Benar!' : 'Jawaban Anda Kurang Tepat';
+                    document.getElementById('explanation-text').innerText = q.explanation;
+                    document.getElementById('check-btn').disabled = true;
+                    document.getElementById('check-btn').classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    expBox.classList.add('hidden');
+                    document.getElementById('check-btn').disabled = false;
+                    document.getElementById('check-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+
+                const isBookmarked = this.bookmarks[this.currentPackageKey][this.currentSectionKey][this.currentIndex];
+                const bookmarkIcon = document.getElementById('bookmark-icon');
+                if (isBookmarked) {
+                    bookmarkIcon.className = 'fa-solid fa-star text-amber-500';
+                } else {
+                    bookmarkIcon.className = 'fa-regular fa-star text-slate-400';
+                }
+
+                document.getElementById('prev-btn').disabled = this.currentIndex === 0;
+                document.getElementById('next-btn').disabled = this.currentIndex === sec.questions.length - 1;
+
+                this.renderPalette();
+                this.updateOverallStats();
+            }
+
+            selectOption(key) {
+                this.userAnswers[this.currentPackageKey][this.currentSectionKey][this.currentIndex] = {
+                    selectedKey: key,
+                    isChecked: false
+                };
+                this.loadQuestion();
+                this.renderSections();
+            }
+
+            checkAnswer() {
+                const currentAns = this.userAnswers[this.currentPackageKey][this.currentSectionKey][this.currentIndex];
+                if (!currentAns || !currentAns.selectedKey) {
+                    alert('Silakan pilih salah satu opsi jawaban terlebih dahulu.');
+                    return;
+                }
+                currentAns.isChecked = true;
+                this.loadQuestion();
+                this.renderSections();
+            }
+
+            nextQuestion() {
+                const pkg = allPackages[this.currentPackageKey];
+                const sec = pkg.sections[this.currentSectionKey];
+                if (this.currentIndex < sec.questions.length - 1) {
+                    this.currentIndex++;
+                    this.loadQuestion();
+                }
+            }
+
+            prevQuestion() {
+                if (this.currentIndex > 0) {
+                    this.currentIndex--;
+                    this.loadQuestion();
+                }
+            }
+
+            jumpToQuestion(idx) {
+                this.currentIndex = idx;
+                this.loadQuestion();
+            }
+
+            toggleBookmark() {
+                const cur = this.bookmarks[this.currentPackageKey][this.currentSectionKey][this.currentIndex];
+                this.bookmarks[this.currentPackageKey][this.currentSectionKey][this.currentIndex] = !cur;
+                this.loadQuestion();
+            }
+
+            renderPalette() {
+                const palette = document.getElementById('question-palette');
+                palette.innerHTML = '';
+                const pkg = allPackages[this.currentPackageKey];
+                const sec = pkg.sections[this.currentSectionKey];
+
+                sec.questions.forEach((q, idx) => {
+                    const ans = this.userAnswers[this.currentPackageKey][this.currentSectionKey][idx];
+                    let btnColor = 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200';
+
+                    if (ans && ans.isChecked) {
+                        if (ans.selectedKey === q.correct) {
+                            btnColor = 'bg-emerald-500 text-white border-emerald-600';
+                        } else {
+                            btnColor = 'bg-rose-500 text-white border-rose-600';
+                        }
+                    } else if (ans && ans.selectedKey) {
+                        btnColor = 'bg-indigo-100 text-indigo-700 border-indigo-300';
+                    }
+
+                    if (idx === this.currentIndex) {
+                        btnColor += ' ring-2 ring-indigo-600 ring-offset-2';
+                    }
+
+                    const pBtn = document.createElement('button');
+                    pBtn.className = `w-10 h-10 rounded-xl font-semibold text-xs border transition flex items-center justify-center ${btnColor}`;
+                    pBtn.innerText = idx + 1;
+                    pBtn.onclick = () => this.jumpToQuestion(idx);
+                    palette.appendChild(pBtn);
+                });
+
+                const answeredCount = Object.values(this.userAnswers[this.currentPackageKey][this.currentSectionKey]).filter(a => a && a.isChecked).length;
+                document.getElementById('section-progress-text').innerText = `${answeredCount}/${sec.questions.length} Terjawab`;
+            }
+
+            updateOverallStats() {
+                let totalCorrect = 0;
+                const pkg = allPackages[this.currentPackageKey];
+
+                Object.keys(pkg.sections).forEach(secKey => {
+                    const sec = pkg.sections[secKey];
+                    const secAns = this.userAnswers[this.currentPackageKey][secKey];
+                    sec.questions.forEach((q, idx) => {
+                        const ans = secAns[idx];
+                        if (ans && ans.isChecked && ans.selectedKey === q.correct) {
+                            totalCorrect++;
+                        }
+                    });
+                });
+
+                document.getElementById('stat-score').innerText = `${totalCorrect}/30`;
+            }
+
+            finishQuiz() {
+                this.switchView('summary');
+            }
+
+            renderSummary() {
+                const pkg = allPackages[this.currentPackageKey];
+                document.getElementById('summary-title').innerText = `Hasil Ujian ${pkg.title}`;
+
+                let totalCorrect = 0;
+                let breakdownContainer = document.getElementById('section-breakdown-list');
+                breakdownContainer.innerHTML = '';
+
+                Object.keys(pkg.sections).forEach(secKey => {
+                    const sec = pkg.sections[secKey];
+                    const secAns = this.userAnswers[this.currentPackageKey][secKey];
+                    let secCorrect = 0;
+                    let secTotal = sec.questions.length;
+
+                    sec.questions.forEach((q, idx) => {
+                        const ans = secAns[idx];
+                        if (ans && ans.isChecked && ans.selectedKey === q.correct) {
+                            secCorrect++;
+                            totalCorrect++;
+                        }
+                    });
+
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 text-sm';
+                    item.innerHTML = `
+                        <span class="font-medium text-slate-700">${sec.title}</span>
+                        <span class="font-bold px-2.5 py-1 rounded-lg ${secCorrect === secTotal ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-700'}">${secCorrect} / ${secTotal} Benar</span>
+                    `;
+                    breakdownContainer.appendChild(item);
+                });
+
+                document.getElementById('summary-correct').innerText = totalCorrect;
+                const pct = Math.round((totalCorrect / 30) * 100);
+                document.getElementById('summary-score-pct').innerText = `${pct}%`;
+            }
+
+            resetCurrentSection() {
+                if (confirm('Apakah Anda ingin mereset progres pada section ini?')) {
+                    this.userAnswers[this.currentPackageKey][this.currentSectionKey] = {};
+                    this.bookmarks[this.currentPackageKey][this.currentSectionKey] = {};
+                    this.currentIndex = 0;
+                    this.loadQuestion();
+                    this.renderSections();
+                }
+            }
+
+            resetAll() {
+                if (confirm('Apakah Anda ingin mereset seluruh progres ujian untuk paket ini?')) {
+                    const pkg = allPackages[this.currentPackageKey];
+                    Object.keys(pkg.sections).forEach(secKey => {
+                        this.userAnswers[this.currentPackageKey][secKey] = {};
+                        this.bookmarks[this.currentPackageKey][secKey] = {};
+                    });
+                    this.currentIndex = 0;
+                    this.switchView('quiz');
+                    this.loadQuestion();
+                    this.renderSections();
+                }
+            }
+        }
+
+        let app;
+        window.onload = function() {
+            app = new TryOutQuizApp();
+        };
+    </script>
+</body>
+</html>
